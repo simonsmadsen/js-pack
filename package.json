@@ -1,0 +1,35 @@
+{
+  "name": "js-pack",
+  "version": "1.0.7",
+  "description": "",
+  "main": "./dist/index.js",
+  "scripts": {
+    "test": "babel-node ./spec/run.js",
+    "start": "node bin/dev",
+    "clean": "rm -rf dist",
+    "build": "npm run clean && mkdir dist && babel src -d dist"
+  },
+  "author": "Simon Madsen",
+  "license": "ISC",
+  "bin": {
+    "ginit": "./dist/index.js"
+  },
+  "dependencies": {
+    "babel-cli": "^6.24.1",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
+    "babel-plugin-transform-es2015-classes": "^6.24.1",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.24.1",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-register": "^6.22.0",
+    "node-sass": "^4.5.3",
+    "request": "^2.81.0",
+    "stylus": "^0.54.5",
+    "uglify-js": "^3.0.25",
+    "webpack": "^3.3.0"
+  },
+  "babel": {
+    "plugins": [
+      "transform-es2015-modules-commonjs"
+    ]
+  }
+}
