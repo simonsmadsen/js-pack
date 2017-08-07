@@ -4,13 +4,30 @@ const jquery = 'https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js
 const util = require('util')
 const exec = require('child_process').exec;
 const fileExists = file => fs.existsSync(file)
-const node_sass = './node_modules/.bin/node-sass'
-const uglifyjs = './node_modules/.bin/uglifyjs'
-const _jsx = (folder,out) => './node_modules/.bin/babel '+folder+'  --out-dir '+out+' --plugins=transform-react-jsx,transform-es2015-classes,transform-es2015-modules-commonjs'
-const _babel = (folder,out) => './node_modules/.bin/babel '+folder+'  --out-dir '+out+' --plugins=transform-es2015-classes,transform-es2015-modules-commonjs'
-const webpack = (folder,out) => './node_modules/.bin/webpack '+folder+' '+out
-const _stylus =  './node_modules/.bin/stylus '
+let node_sass = '"./node_modules/.bin/node-sass"'
+let uglifyjs = './node_modules/.bin/uglifyjs'
+let _jsx = (folder,out) => './node_modules/.bin/babel '+folder+'  --out-dir '+out+' --plugins=transform-react-jsx,transform-es2015-classes,transform-es2015-modules-commonjs'
+let _babel = (folder,out) => './node_modules/.bin/babel '+folder+'  --out-dir '+out+' --plugins=transform-es2015-classes,transform-es2015-modules-commonjs'
+let webpack = (folder,out) => './node_modules/.bin/webpack '+folder+' '+out
+let _stylus =  './node_modules/.bin/stylus '
+let removeFile = file => 'rm '+file
+let removeFolder = folder => 'rmdir '+folder
+let mkdir = folder => 'mkdir '+folder
 const ran = _ => Math.floor((Math.random() * 1000) + 1)
+
+var isWin = /^win/.test(process.platform)
+if(isWin){
+  node_sass = '"./node_modules/.bin/node-sass"'
+  uglifyjs = '"./node_modules/.bin/uglifyjs"'
+  _jsx = (folder,out) => '"./node_modules/.bin/babel" "'+folder+'"  --out-dir "'+out+'" --plugins=transform-react-jsx,transform-es2015-classes,transform-es2015-modules-commonjs'
+  _babel = (folder,out) => '"./node_modules/.bin/babel" "'+folder+'"  --out-dir "'+out+'" --plugins=transform-es2015-classes,transform-es2015-modules-commonjs'
+  webpack = (folder,out) => '"./node_modules/.bin/webpack" "'+folder+'" "'+out+'"'
+  _stylus =  '"./node_modules/.bin/stylus" '
+  removeFile = file => 'del "'+file+'"'
+  removeFolder = folder => 'rmdir /s /q "'+folder+'"'
+  mkdir = folder => 'mkdir "'+folder+'"'
+}
+
 
 const run = call => {
   return new Promise( (resolve,reject) => {
@@ -57,7 +74,7 @@ export function sass(file){
   return run(node_sass+' '+file+' '+out)
   .then(r => {
     const data = fs.readFileSync(out, 'utf8')
-    run('rm '+out)
+    run(removeFile(out))
     return Promise.resolve(new Style(data))
   })
 }
@@ -66,28 +83,28 @@ export function stylus(file){
   return run(_stylus+' '+file+' -o '+out)
   .then(r => {
     const data = fs.readFileSync(out, 'utf8')
-    run('rm '+out)
+    run(removeFile(out))
     return Promise.resolve(new Style(data))
   })
 }
 
 export async function jsx(folder,index){
   const out = __dirname+'/tempjsx'+ran()
-  await run('mkdir '+out)
+  await run(mkdir(out))
   await run(_jsx(folder,out))
   await run(webpack(out+'/'+index,out+'/js-web-linked-packed.js'))
   const data = fs.readFileSync(out+'/js-web-linked-packed.js', 'utf8')
-  await run('rm -R '+out)
+  await run(removeFolder(out))
   return new Script(data)
 }
 
 export async function babel(folder,index){
   const out = __dirname+'/tempbabel'+ran()
-  await run('mkdir '+out)
+  await run(mkdir(out))
   await run(_babel(folder,out))
   await run(webpack(out+'/'+index,out+'/i_temp.js'))
   const data = fs.readFileSync(out+'/i_temp.js', 'utf8')
-  await run('rm -R '+out)
+  await run(removeFolder(out))
   return new Script(data)
 }
 
