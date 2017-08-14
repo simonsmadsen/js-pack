@@ -13,6 +13,7 @@ let _stylus =  './node_modules/.bin/stylus '
 let removeFile = file => 'rm '+file
 let removeFolder = folder => 'rmdir '+folder
 let mkdir = folder => 'mkdir '+folder
+let folderStart = '/'
 const ran = _ => Math.floor((Math.random() * 1000) + 1)
 
 var isWin = /^win/.test(process.platform)
@@ -26,6 +27,7 @@ if(isWin){
   removeFile = file => 'del "'+file+'"'
   removeFolder = folder => 'rmdir /s /q "'+folder+'"'
   mkdir = folder => 'mkdir "'+folder+'"'
+  folderStart = '\\'
 }
 
 
@@ -70,7 +72,7 @@ export function cssCDN(url){
 }
 
 export function sass(file){
-  const out = __dirname+'/temp'+ran()+'.css'
+  const out = __dirname+folderStart+'temp'+ran()+'.css'
   return run(node_sass+' '+file+' '+out)
   .then(r => {
     const data = fs.readFileSync(out, 'utf8')
@@ -79,7 +81,7 @@ export function sass(file){
   })
 }
 export function stylus(file){
-  const out = __dirname+'/temp'+ran()+'.css'
+  const out = __dirname+folderStart+'temp'+ran()+'.css'
   return run(_stylus+' '+file+' -o '+out)
   .then(r => {
     const data = fs.readFileSync(out, 'utf8')
@@ -89,21 +91,21 @@ export function stylus(file){
 }
 
 export async function jsx(folder,index){
-  const out = __dirname+'/tempjsx'+ran()
+  const out = __dirname+folderStart+'tempjsx'+ran()
   await run(mkdir(out))
   await run(_jsx(folder,out))
-  await run(webpack(out+'/'+index,out+'/js-web-linked-packed.js'))
-  const data = fs.readFileSync(out+'/js-web-linked-packed.js', 'utf8')
+  await run(webpack(out+folderStart+index,out+folderStart+'js-web-linked-packed.js'))
+  const data = fs.readFileSync(out+folderStart+'js-web-linked-packed.js', 'utf8')
   await run(removeFolder(out))
   return new Script(data)
 }
 
 export async function babel(folder,index){
-  const out = __dirname+'/tempbabel'+ran()
+  const out = __dirname+folderStart+'tempbabel'+ran()
   await run(mkdir(out))
   await run(_babel(folder,out))
-  await run(webpack(out+'/'+index,out+'/i_temp.js'))
-  const data = fs.readFileSync(out+'/i_temp.js', 'utf8')
+  await run(webpack(out+folderStart+index,out+folderStart+'i_temp.js'))
+  const data = fs.readFileSync(out+folderStart+'i_temp.js', 'utf8')
   await run(removeFolder(out))
   return new Script(data)
 }
