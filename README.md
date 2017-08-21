@@ -1,7 +1,14 @@
 # js-pack
 
-Javascript package is for js-web framework.
+Javascript package for js-web framework.
+
 http://js-web-framework.com
+
+https://www.npmjs.com/package/js-web
+
+## docs
+
+https://js-web-framework.com/docs/injections
 
 ## Getting Started
 
