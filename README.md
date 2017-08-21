@@ -1,6 +1,7 @@
 # js-pack
 
-Javascript packing library for js-web framework
+Javascript package is for js-web framework.
+http://js-web-framework.com
 
 ## Getting Started
 

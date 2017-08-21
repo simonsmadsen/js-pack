@@ -27,7 +27,7 @@ let _babel = (folder, out) => './node_modules/.bin/babel ' + folder + '  --out-d
 let webpack = (folder, out) => './node_modules/.bin/webpack ' + folder + ' ' + out;
 let _stylus = './node_modules/.bin/stylus ';
 let removeFile = file => 'rm ' + file;
-let removeFolder = folder => 'rmdir ' + folder;
+let removeFolder = folder => 'rm -R ' + folder;
 let mkdir = folder => 'mkdir ' + folder;
 let folderStart = '/';
 const ran = _ => Math.floor(Math.random() * 1000 + 1);
@@ -53,7 +53,7 @@ const run = call => {
         console.log(stderr);
       }
       if (error) {
-        console.log(error);
+        //console.log(error)
       }
       resolve(stdout);
     });
@@ -107,16 +107,17 @@ async function jsx(folder, index) {
   await run(_jsx(folder, out));
   await run(webpack(out + folderStart + index, out + folderStart + 'js-web-linked-packed.js'));
   const data = fs.readFileSync(out + folderStart + 'js-web-linked-packed.js', 'utf8');
+  await run(removeFile(out + folderStart + 'js-web-linked-packed.js'));
   await run(removeFolder(out));
   return new Script(data);
 }
 
 async function babel(folder, index) {
-  const out = __dirname + folderStart + 'tempbabel' + ran();
+  const out = __dirname + folderStart + 'tempjsx' + ran();
   await run(mkdir(out));
   await run(_babel(folder, out));
-  await run(webpack(out + folderStart + index, out + folderStart + 'i_temp.js'));
-  const data = fs.readFileSync(out + folderStart + 'i_temp.js', 'utf8');
+  await run(webpack(out + folderStart + index, out + folderStart + 'js-web-linked-packed.js'));
+  const data = fs.readFileSync(out + folderStart + 'js-web-linked-packed.js', 'utf8');
   await run(removeFolder(out));
   return new Script(data);
 }
